@@ -1,7 +1,11 @@
-from sqlalchemy import desc, asc, text
+from sqlalchemy import desc, asc, text, and_, or_
 from config import db
 from typing import Union
 from icecream import ic
+
+from functions import str_to_datetime
+
+from base64 import b64encode
 
 class Model:
     """docstring for Model"""
@@ -87,9 +91,9 @@ class Model:
             qr_code_end=None, room_id=None, user_id=None):
         try:
             new_event = Event(
-                name, description, topic, hour_begin, 
-                duration, speaker, credits, credit_type, qr_code_begin, 
-                qr_code_end, room_id, user_id)
+                name=name, description=description, topic=topic, hour_begin=str_to_datetime(hour_begin), 
+                duration=duration, speaker=speaker, credits=credits, credit_type=credit_type, qr_code_begin=qr_code_begin, 
+                qr_code_end=qr_code_end, room_id=room_id, user_id=user_id)
             self.__session.add(new_event)
             self.__session.commit()
             self.__session.refresh(new_event)
@@ -117,13 +121,25 @@ class Model:
 
     def delete_event(self, event_id):
         try:
-            response = Event.query.filter_by(event_id=user_id).delete()
+            response = Event.query.filter_by(event_id=event_id).delete()
             self.__session.commit()
             return response
         except Exception as e:
             ic(e)
             return None
 
+    def update_event(self, event_id, qr_code_begin=None, qr_code_end=None):
+        try:
+            event = Event.query.get(event_id)
+            if qr_code_begin:
+                event.qr_code_begin = qr_code_begin
+            if qr_code_end:
+                event.qr_code_end = qr_code_end
+            self.__session.commit()
+            return True
+        except Exception as e:
+            ic(e)
+            return None
 
 
     """
@@ -162,6 +178,66 @@ class Model:
     def delete_room(self, room_id):
         try:
             response = Room.query.filter_by(room_id=room_id).delete()
+            self.__session.commit()
+            return response
+        except Exception as e:
+            ic(e)
+            return None
+
+
+    """
+        ASSISTANCE METHODS
+    """
+    def insert_assistance(self, 
+                registered_begin=None, registered_end=None, 
+                user_id=None,event_id=None,room_id=None,):
+        try:
+            new_assistance = Assistance( 
+                registered_begin=registered_begin, registered_end=registered_end, 
+                user_id=user_id,event_id=event_id,room_id=room_id,)
+            self.__session.add(new_assistance)
+            self.__session.commit()
+            self.__session.refresh(new_assistance)
+            return new_assistance.assistance_id
+        except Exception as e:
+            ic(e)
+            return None
+
+    def read_assistance(self, assistance_id):
+        try:
+            return Assistance.query.get(assistance_id).to_dict()
+            # return self.__session.query(User).filter(user_id).first().to_dict()
+        except Exception as e:
+            ic(e)
+            return None
+
+
+    def read_all_assistances(self):
+        try:
+            return list(map(lambda row: row.to_dict(), Assistance.query.all()))
+            # return self.__session.query(User).filter(user_id).first().to_dict()
+        except Exception as e:
+            ic(e)
+            return None
+
+    def update_assistance(self, user_id, event_id, registered_begin=None,registered_end=None):
+        try:
+            assistance = self.__session.query(Assistance).filter(
+                (Assistance.user_id == user_id) | (Assistance.event_id == event_id)).first()
+            if registered_begin:
+                assistance.registered_begin = registered_begin
+            if registered_end:
+                assistance.registered_end = registered_end
+            self.__session.commit()
+            return assistance.assistance_id
+        except Exception as e:
+            ic(e)
+            return None
+
+
+    def delete_assistance(self, assistance_id):
+        try:
+            response = Assistance.query.filter_by(assistance_id=assistance_id).delete()
             self.__session.commit()
             return response
         except Exception as e:
@@ -212,8 +288,8 @@ class Event(db.Model):
     credits = db.Column(db.Float, nullable=True, default=None)
     credit_type = db.Column(db.Float, nullable=True, default=None)
 
-    qr_code_begin = db.Column(db.String(50), nullable=True, default=None)
-    qr_code_end = db.Column(db.String(50), nullable=True, default=None)
+    qr_code_begin = db.Column(db.String(100), nullable=True, default=None)
+    qr_code_end = db.Column(db.String(100), nullable=True, default=None)
 
 
     # M - 1
@@ -231,8 +307,12 @@ class Event(db.Model):
             description=self.description, topic=self.topic,
             hour_begin=self.hour_begin, duration=self.duration,
             speaker=self.speaker, credits=self.credits,
-            credit_type=self.credit_type, qr_code_begin=self.qr_code_begin,
-            qr_code_end=self.qr_code_end, room_id=self.room_id,
+            credit_type=self.credit_type, 
+            qr_code_begin=b64encode(open(self.qr_code_begin, "rb").read()).decode(),
+            qr_code_end=b64encode(open(self.qr_code_end, "rb").read()).decode(), 
+            # qr_code_begin=self.qr_code_begin,
+            # qr_code_end=self.qr_code_end, 
+            room_id=self.room_id,
             user_id=self.user_id,
             )
 
@@ -279,3 +359,13 @@ class Assistance(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey("Event.event_id"), nullable=False)
     room_id = db.Column(db.Integer, db.ForeignKey("Room.room_id"), nullable=False)
 
+    def to_dict(self):
+        return dict(
+        assistance_id=self.assistance_id,
+        registered_begin=self.registered_begin,
+        registered_end=self.registered_end,
+        user_id=self.user_id,
+        event_id=self.event_id,
+        room_id=self.room_id,
+
+            )

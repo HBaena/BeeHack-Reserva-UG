@@ -26,6 +26,8 @@ from datetime import timezone
 
 
 from json import loads
+from json import dumps
+
 from time import time
 from icecream import ic
 import io
@@ -148,6 +150,25 @@ class Event(Resource):
 
         response = model.insert_event(**data_db)
         if response:
+            data_db['event_id'] = response
+            data_db['time'] = 'begin'
+            ic(dumps(data_db))
+            qr_code_begin = generate_qr_from_json(data_db)
+            data_db['time'] = 'end'
+            qr_code_end = generate_qr_from_json(data_db)
+            del data_db['time']
+
+            try:
+                begin_filename = path.join(getcwd(), f'qr_codes/{time()}.png')
+                end_filename = path.join(getcwd(), f'qr_codes/{time()}.png')
+                qr_code_begin.save(begin_filename, format='PNG')
+                qr_code_end.save(end_filename, format='PNG')
+            except Exception as e:
+                return jsonify(status="fail", message="Error while inserting", log=str(e))
+            model.update_event(response, qr_code_begin=begin_filename, qr_code_end=end_filename)
+            data_db['qr_code_begin'] = begin_filename
+            data_db['qr_code_end'] = end_filename
+
             return jsonify(status="good", message="Inserted correctly", 
                 data=dict(event_id=response))
         else:
@@ -200,6 +221,69 @@ class Room(Resource):
         else:
             return jsonify(status="fail", message="Error whil deleting")
 
+
+class Assistance(Resource):
+    def get(self):
+        idx = request.args.get('idx', None)
+        if idx:
+            response = model.read_assistance(idx)
+        else:
+            response = model.read_all_assistances()
+
+        if response:
+            return jsonify(status="good", message="Read correctly", 
+                data=response)
+        else:
+            return jsonify(status="fail", message="Error whil reading")
+
+    def post(self):
+        data_db = dict( 
+                # registered_begin=request.form.get("registered_begin", None),
+                # registered_end=request.form.get("registered_end", None),
+                user_id=request.form.get("user_id", None),
+                event_id=request.form.get("event_id", None),
+                room_id=request.form.get("room_id", None)
+            )
+        if not all(data_db.values()):
+            return jsonify(status="error", message="All fields are required")
+        data_db['registered_end'] = None
+        data_db['registered_begin'] = None
+        response = model.insert_assistance(**data_db)
+        if response:
+            return jsonify(status="good", message="Inserted correctly", 
+                data=dict(assistance_id=response))
+        else:
+            return jsonify(status="fail", message="Error whil inserting")
+
+    def delete(self):
+        idx = request.args.get('idx', None)
+        response = model.delete_assistance(idx)
+        if response:
+            return jsonify(status="good", message="Deleted correctly")
+        else:
+            return jsonify(status="fail", message="Error whil deleting")
+
+    def patch(self):
+        qr_code = request.files.get("qr-code", None)
+        data = loads(decode_qr_code(qr_code.read()))
+        ic(data)
+        user_id = request.args.get("user_id", None)
+        state = data.get('time', None)
+        if  not state:
+            return jsonify(status="fail", message="Unknown code")
+
+        if state == 'begin':
+             response = model.update_assistance(int(user_id), int(data['event_id']), registered_begin=True)
+             message = "Verfied at the begin"
+        else:  # time == end
+             response = model.update_assistance(int(user_id), int(data['event_id']), registered_end=True)
+             message = "Verfied at the end"
+        if response:
+            return jsonify(status="good", message=message, assistance_id=response)
+        else:
+            return jsonify(status="fail", message="Error whil updating")
+
+
 class QRCode(Resource):
 
     def get(self):
@@ -216,23 +300,24 @@ class QRCode(Resource):
         img_byte_arr = img_byte_arr.getvalue()
         return send_file(
             io.BytesIO(img_byte_arr),
-            mimetype='image/jpeg',
+            mimetype='image/png',
             as_attachment=True,
-            attachment_filename='qr_code.jpg')
+            attachment_filename='qr_code.png')
 
     def post(self):
 
         qr_code = request.files.get("qr-code", None)
         if not qr_code:
-            return jsonify(status='error', message='idx not received')
+            return jsonify(status='error', message='qr code not received')
         return loads(decode_qr_code(qr_code.read()))
 
 
 api.add_resource(Main, '/home/')
-api.add_resource(QRCode, '/qr-code/')
+api.add_resource(QRCode, '/room/qr-code/')
 api.add_resource(User, '/user/')
 api.add_resource(Event, '/event/')
 api.add_resource(Room, '/room/')
+api.add_resource(Assistance, '/assistance/')
 
 if __name__ == '__main__':
     # Run the app as development
