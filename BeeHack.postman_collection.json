@@ -1,0 +1,1030 @@
+{
+	"info": {
+		"_postman_id": "aa3391cf-ceb1-49c3-9d27-d2b29205f29e",
+		"name": "BeeHack",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Test Server",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "qr-code",
+							"type": "file",
+							"src": [],
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url-local}}/home/",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"home",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get qr-code",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url-local}}/room/qr-code/?id_room=1&a=b&c=d&e=f&g=h&i=j&k=l",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"room",
+						"qr-code",
+						""
+					],
+					"query": [
+						{
+							"key": "id_room",
+							"value": "1"
+						},
+						{
+							"key": "a",
+							"value": "b"
+						},
+						{
+							"key": "c",
+							"value": "d"
+						},
+						{
+							"key": "e",
+							"value": "f"
+						},
+						{
+							"key": "g",
+							"value": "h"
+						},
+						{
+							"key": "i",
+							"value": "j"
+						},
+						{
+							"key": "k",
+							"value": "l"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Decode qr code",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "qr-code",
+							"type": "file",
+							"src": "/home/hbaena/Documentos/PanData/qr_codes/1621713894.1222153.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url-local}}/room/qr-code/",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"room",
+						"qr-code",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "HBaena-3",
+							"type": "text"
+						},
+						{
+							"key": "full_name",
+							"value": "Adan HBaena",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "123",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "a@ugto.mx",
+							"type": "text"
+						},
+						{
+							"key": "user_type",
+							"value": "Estudiante",
+							"type": "text"
+						},
+						{
+							"key": "career",
+							"value": "Sistemas",
+							"type": "text"
+						},
+						{
+							"key": "division",
+							"value": "DICIS",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url-local}}/user/",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"user",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete user by id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url-local}}/user/?idx=3",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"user",
+						""
+					],
+					"query": [
+						{
+							"key": "idx",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all users",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "HBaena-3",
+							"type": "text"
+						},
+						{
+							"key": "full_name",
+							"value": "Adan HBaena",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "123",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "a@ugto.mx",
+							"type": "text"
+						},
+						{
+							"key": "user_type",
+							"value": "Estudiante",
+							"type": "text"
+						},
+						{
+							"key": "career",
+							"value": "Sistemas",
+							"type": "text"
+						},
+						{
+							"key": "division",
+							"value": "DICIS",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url-local}}/user/",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"user",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user by id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "HBaena-3",
+							"type": "text"
+						},
+						{
+							"key": "full_name",
+							"value": "Adan HBaena",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "123",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "a@ugto.mx",
+							"type": "text"
+						},
+						{
+							"key": "user_type",
+							"value": "Estudiante",
+							"type": "text"
+						},
+						{
+							"key": "career",
+							"value": "Sistemas",
+							"type": "text"
+						},
+						{
+							"key": "division",
+							"value": "DICIS",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url-local}}/user/",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"user",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add room",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "size",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Sala de usos multiples",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Sala de usos multiples - description",
+							"type": "text"
+						},
+						{
+							"key": "building",
+							"value": "Edificio 3",
+							"type": "text"
+						},
+						{
+							"key": "division",
+							"value": "DICIS",
+							"type": "text"
+						},
+						{
+							"key": "campus",
+							"value": "Irapuato - Salamanca",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url-local}}/room/",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"room",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get room by id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "size",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Sala de usos multiples",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Sala de usos multiples - description",
+							"type": "text"
+						},
+						{
+							"key": "building",
+							"value": "Edificio 3",
+							"type": "text"
+						},
+						{
+							"key": "division",
+							"value": "DICIS",
+							"type": "text"
+						},
+						{
+							"key": "campus",
+							"value": "Irapuato - Salamanca",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url-local}}/room/?idx=1",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"room",
+						""
+					],
+					"query": [
+						{
+							"key": "idx",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all rooms",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "size",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Sala de usos multiples",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Sala de usos multiples - description",
+							"type": "text"
+						},
+						{
+							"key": "building",
+							"value": "Edificio 3",
+							"type": "text"
+						},
+						{
+							"key": "division",
+							"value": "DICIS",
+							"type": "text"
+						},
+						{
+							"key": "campus",
+							"value": "Irapuato - Salamanca",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url-local}}/room/",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"room",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete room by id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "size",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Sala de usos multiples",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Sala de usos multiples - description",
+							"type": "text"
+						},
+						{
+							"key": "building",
+							"value": "Edificio 3",
+							"type": "text"
+						},
+						{
+							"key": "division",
+							"value": "DICIS",
+							"type": "text"
+						},
+						{
+							"key": "campus",
+							"value": "Irapuato - Salamanca",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url-local}}/room/?idx=3",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"room",
+						""
+					],
+					"query": [
+						{
+							"key": "idx",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add new event",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "Platica sobre violencia",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Platica sobre violencia - description",
+							"type": "text"
+						},
+						{
+							"key": "topic",
+							"value": "violencia",
+							"type": "text"
+						},
+						{
+							"key": "hour_begin",
+							"value": "11/02/21 10:00",
+							"type": "text"
+						},
+						{
+							"key": "duration",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "speaker",
+							"value": "Cristobal colon",
+							"type": "text"
+						},
+						{
+							"key": "credits",
+							"value": "0.1",
+							"type": "text"
+						},
+						{
+							"key": "credit_type",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "room_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url-local}}/event/",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"event",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get event by id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "Platica sobre violencia",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Platica sobre violencia - description",
+							"type": "text"
+						},
+						{
+							"key": "topic",
+							"value": "violencia",
+							"type": "text"
+						},
+						{
+							"key": "hour_begin",
+							"value": "11/02/21 08:00",
+							"type": "text"
+						},
+						{
+							"key": "duration",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "speaker",
+							"value": "Cristobal colon",
+							"type": "text"
+						},
+						{
+							"key": "credits",
+							"value": "0.1",
+							"type": "text"
+						},
+						{
+							"key": "credit_type",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "room_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url-local}}/event/?idx=5",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"event",
+						""
+					],
+					"query": [
+						{
+							"key": "idx",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all events",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "Platica sobre violencia",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Platica sobre violencia - description",
+							"type": "text"
+						},
+						{
+							"key": "topic",
+							"value": "violencia",
+							"type": "text"
+						},
+						{
+							"key": "hour_begin",
+							"value": "11/02/21 08:00",
+							"type": "text"
+						},
+						{
+							"key": "duration",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "speaker",
+							"value": "Cristobal colon",
+							"type": "text"
+						},
+						{
+							"key": "credits",
+							"value": "0.1",
+							"type": "text"
+						},
+						{
+							"key": "credit_type",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "room_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url-local}}/event/",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"event",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete event by id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "Platica sobre violencia",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Platica sobre violencia - description",
+							"type": "text"
+						},
+						{
+							"key": "topic",
+							"value": "violencia",
+							"type": "text"
+						},
+						{
+							"key": "hour_begin",
+							"value": "11/02/21 08:00",
+							"type": "text"
+						},
+						{
+							"key": "duration",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "speaker",
+							"value": "Cristobal colon",
+							"type": "text"
+						},
+						{
+							"key": "credits",
+							"value": "0.1",
+							"type": "text"
+						},
+						{
+							"key": "credit_type",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "room_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url-local}}/event/?idx=1",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"event",
+						""
+					],
+					"query": [
+						{
+							"key": "idx",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add new Assistance",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "user_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "event_id",
+							"value": "1",
+							"type": "text"
+						},
+						{
+							"key": "room_id",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url-local}}/assistance/",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"assistance",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get assistance details",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{url-local}}/assistance/?idx=1",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"assistance",
+						""
+					],
+					"query": [
+						{
+							"key": "idx",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all assistances",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{url-local}}/assistance/",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"assistance",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete assistance by id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{url-local}}/assistance/?idx=1",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"assistance",
+						""
+					],
+					"query": [
+						{
+							"key": "idx",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify assistance",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "qr-code",
+							"type": "file",
+							"src": "/home/hbaena/Documentos/PanData/qr_codes/1621716184.4048445.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url-local}}/assistance/?user_id=1",
+					"host": [
+						"{{url-local}}"
+					],
+					"path": [
+						"assistance",
+						""
+					],
+					"query": [
+						{
+							"key": "user_id",
+							"value": "1"
+						},
+						{
+							"key": "qr-code",
+							"value": "d",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "url-local",
+			"value": "127.0.0.1:5000"
+		}
+	]
+}
