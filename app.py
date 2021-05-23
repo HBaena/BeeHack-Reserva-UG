@@ -4,6 +4,8 @@ from flask import jsonify  # Flask, receiving data from requests, json handling
 from flask import after_this_request  
 from flask_restful import Resource  # modules for fast creation of apis
 
+from sqlalchemy import inspect
+
 from config import app
 from config import api
 from config import db
@@ -29,16 +31,18 @@ from datetime import timezone
 from json import loads
 from json import dumps
 
-from time import time
-from icecream import ic
-import io
+from io import BytesIO
 
-from sqlalchemy import inspect
+from time import time
+
+from icecream import ic
 
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import set_access_cookies
+from flask_jwt_extended import verify_jwt_in_request
+from flask_jwt_extended import get_jwt
 
 
 API_VERSION = '1.0.000'
@@ -71,6 +75,20 @@ def initialize() -> NoReturn:
     #     user_type='Estudiante', career='Sistemas',
     #     division='dicis')
 
+def admin_required():
+    def wrapper(fn):
+        @wraps(fn)
+        def decorator(*args, **kwargs):
+            verify_jwt_in_request()
+            claims = get_jwt()
+            if claims["user_type"] is in ('admin', 'root'):
+                return fn(*args, **kwargs)
+            else:
+                return jsonify(status='fail', message="Admins only!")
+
+        return decorator
+
+    return wrapper
 
 class Main(Resource):
 
@@ -95,6 +113,8 @@ class User(Resource):
         else:
             return jsonify(status="fail", message="Error whil reading")
 
+
+    # Jwt not required
     def post(self):
         data_db = dict(
             username=request.form.get('username', None), 
@@ -114,6 +134,9 @@ class User(Resource):
         else:
             return jsonify(status="fail", message="Error whil inserting")
 
+
+    
+    @admin_required()
     def delete(self):
         idx = request.args.get('idx', None)
         response = model.delete_user(idx)
@@ -124,6 +147,7 @@ class User(Resource):
 
 
 class Event(Resource):
+
     @jwt_required()
     def get(self):
         idx = request.args.get('idx', None)
@@ -137,6 +161,7 @@ class Event(Resource):
                 data=response)
         else:
             return jsonify(status="fail", message="Error whil reading")
+
 
     def post(self):
         data_db = dict(
@@ -180,6 +205,9 @@ class Event(Resource):
         else:
             return jsonify(status="fail", message="Error whil inserting")
 
+
+    
+    @admin_required()
     def delete(self):
         idx = request.args.get('idx', None)
         response = model.delete_event(idx)
@@ -190,6 +218,7 @@ class Event(Resource):
 
 
 class Room(Resource):
+
     @jwt_required()
     def get(self):
         idx = request.args.get('idx', None)
@@ -220,6 +249,8 @@ class Room(Resource):
         else:
             return jsonify(status="fail", message="Error whil inserting")
 
+    
+    @admin_required()
     def delete(self):
         idx = request.args.get('idx', None)
         response = model.delete_room(idx)
@@ -261,6 +292,9 @@ class Assistance(Resource):
         else:
             return jsonify(status="fail", message="Error whil inserting")
 
+
+    
+    @admin_required()
     def delete(self):
         idx = request.args.get('idx', None)
         response = model.delete_assistance(idx)
@@ -269,6 +303,8 @@ class Assistance(Resource):
         else:
             return jsonify(status="fail", message="Error whil deleting")
 
+    
+    @admin_required()
     def patch(self):
         qr_code = request.files.get("qr-code", None)
         data = loads(decode_qr_code(qr_code.read()))
@@ -292,7 +328,8 @@ class Assistance(Resource):
 
 class QRCode(Resource):
 
-    @jwt_required()
+    
+    @admin_required()
     def get(self):
 
         data = dict(request.args)
@@ -302,15 +339,16 @@ class QRCode(Resource):
         except Exception as e:
             return jsonify(status='error', message='Error creating code', log=str(e))
 
-        img_byte_arr = io.BytesIO()
+        img_byte_arr = BytesIO()
         qr_code.save(img_byte_arr, format='PNG')
         img_byte_arr = img_byte_arr.getvalue()
         return send_file(
-            io.BytesIO(img_byte_arr),
+            BytesIO(img_byte_arr),
             mimetype='image/png',
             as_attachment=True,
             attachment_filename='qr_code.png')
 
+    @jwt_required()
     def post(self):
 
         qr_code = request.files.get("qr-code", None)
@@ -321,6 +359,7 @@ class QRCode(Resource):
 
 class Calendar(Resource):
 
+    @jwt_required()
     def post(self):
         qr_code = request.files.get('qr-code', None)
 
@@ -358,6 +397,7 @@ class Login(Resource):
             refresh_token = create_refresh_token(identity=user.username)
         # set_access_cookies(response, access_token)
             return jsonify(status='good', message='Login successfully', 
+                additional_claims = {"role": user.user_type}  # If root, student, admin, teacher, etc
                 data=dict(access_token=access_token, refresh_token=refresh_token))
         else:
             return jsonify(status='fail', message='wrong password or username')
