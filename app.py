@@ -19,6 +19,8 @@ from model import Model
 
 from typing import Any, NoReturn
 
+from functools import wraps
+
 from os import getcwd
 from os import path 
 from os import remove 
@@ -81,7 +83,7 @@ def admin_required():
         def decorator(*args, **kwargs):
             verify_jwt_in_request()
             claims = get_jwt()
-            if claims["user_type"] is in ('admin', 'root'):
+            if claims["role"] in ('admin', 'root'):
                 return fn(*args, **kwargs)
             else:
                 return jsonify(status='fail', message="Admins only!")
@@ -393,11 +395,10 @@ class Login(Resource):
         user = model.login(username, password)
 
         if user:
-            access_token = create_access_token(identity=user.username)
-            refresh_token = create_refresh_token(identity=user.username)
-        # set_access_cookies(response, access_token)
+            additional_claims = {"role": user.user_type}  # If root, student, admin, teacher, etc
+            access_token = create_access_token(identity=user.username, additional_claims=additional_claims)
+            refresh_token = create_refresh_token(identity=user.username, additional_claims=additional_claims)
             return jsonify(status='good', message='Login successfully', 
-                additional_claims = {"role": user.user_type}  # If root, student, admin, teacher, etc
                 data=dict(access_token=access_token, refresh_token=refresh_token))
         else:
             return jsonify(status='fail', message='wrong password or username')
