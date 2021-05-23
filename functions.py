@@ -1,6 +1,4 @@
 import qrcode
-from PIL import Image
-from cv2 import QRCodeDetector
 from cv2 import imdecode
 import numpy as np
 from json import dumps
@@ -16,7 +14,6 @@ def generate_qr_from_json(data: dict) -> bytearray:
 #     return img = qrcode.make(str(id_x))
 
 def decode_qr_code(qr_code: bytearray) -> dict:
-    decoder =QRCodeDetector()
     img = imdecode(np.frombuffer(qr_code, np.uint8), -1)
     return decode(img)[0].data.decode("UTF-8")
 

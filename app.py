@@ -7,6 +7,7 @@ from flask_restful import Resource  # modules for fast creation of apis
 from config import app
 from config import api
 from config import db
+from config import jwt
 # from config import connect_to_sqlite
 
 from functions import generate_qr_from_json
@@ -33,9 +34,11 @@ from icecream import ic
 import io
 
 from sqlalchemy import inspect
-# from sqlalchemy import create_engine
-# from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
-# from sqlalchemy import inspect
+
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_refresh_token
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import set_access_cookies
 
 
 API_VERSION = '1.0.000'
@@ -71,12 +74,14 @@ def initialize() -> NoReturn:
 
 class Main(Resource):
 
+    @jwt_required()
     def get(self):
         ic(model.execute('SELECT * FROM "User"'))
         return jsonify(version=API_VERSION)
 
 
 class User(Resource):
+    @jwt_required()
     def get(self):
         idx = request.args.get('idx', None)
         if idx:
@@ -119,6 +124,7 @@ class User(Resource):
 
 
 class Event(Resource):
+    @jwt_required()
     def get(self):
         idx = request.args.get('idx', None)
         if idx:
@@ -184,6 +190,7 @@ class Event(Resource):
 
 
 class Room(Resource):
+    @jwt_required()
     def get(self):
         idx = request.args.get('idx', None)
         if idx:
@@ -223,6 +230,7 @@ class Room(Resource):
 
 
 class Assistance(Resource):
+    @jwt_required()
     def get(self):
         idx = request.args.get('idx', None)
         if idx:
@@ -237,9 +245,7 @@ class Assistance(Resource):
             return jsonify(status="fail", message="Error whil reading")
 
     def post(self):
-        data_db = dict( 
-                # registered_begin=request.form.get("registered_begin", None),
-                # registered_end=request.form.get("registered_end", None),
+        data_db = dict(
                 user_id=request.form.get("user_id", None),
                 event_id=request.form.get("event_id", None),
                 room_id=request.form.get("room_id", None)
@@ -286,6 +292,7 @@ class Assistance(Resource):
 
 class QRCode(Resource):
 
+    @jwt_required()
     def get(self):
 
         data = dict(request.args)
@@ -312,12 +319,63 @@ class QRCode(Resource):
         return loads(decode_qr_code(qr_code.read()))
 
 
+class Calendar(Resource):
+
+    def post(self):
+        qr_code = request.files.get('qr-code', None)
+
+        if not qr_code:
+            return jsonify(status='error', message='qr code not received')
+
+        data = loads(decode_qr_code(qr_code.read()))
+        id_room = data['id_room']
+
+        response =  model.read_all_events_by_id_room(id_room)
+
+        if response:
+            events = []
+            for event in response:
+                del event['qr_code_end']
+                del event['qr_code_begin']
+                events.append(event)
+
+            return jsonify(status="good", message="Read correctly", 
+                data=events)
+        else:
+            return jsonify(status="fail", message="Error whil reading")            
+
+
+class Login(Resource):
+
+    def post(self):        
+        username = request.form.get("username", None)
+        password = request.form.get("password", None)
+
+        user = model.login(username, password)
+
+        if user:
+            access_token = create_access_token(identity=user.username)
+            refresh_token = create_refresh_token(identity=user.username)
+        # set_access_cookies(response, access_token)
+            return jsonify(status='good', message='Login successfully', 
+                data=dict(access_token=access_token, refresh_token=refresh_token))
+        else:
+            return jsonify(status='fail', message='wrong password or username')
+
+
+
 api.add_resource(Main, '/home/')
 api.add_resource(QRCode, '/room/qr-code/')
 api.add_resource(User, '/user/')
 api.add_resource(Event, '/event/')
+# api.add_resource(Reservation, '/event/reserve/')
 api.add_resource(Room, '/room/')
 api.add_resource(Assistance, '/assistance/')
+api.add_resource(Calendar, '/calendar/')
+api.add_resource(Login, '/login/')
+
+
+
 
 if __name__ == '__main__':
     # Run the app as development

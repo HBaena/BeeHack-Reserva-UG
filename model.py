@@ -82,6 +82,18 @@ class Model:
             ic(e)
             return None
 
+    def login(self, username, password):
+        try:
+            user = self.__session.query(User).filter(
+                    (User.username == username) | (User.password == password)).first()
+            if user:
+                return user
+            else:
+                return None
+        except Exception as e:
+            ic(e)
+            return None
+
     """
         Event METHODS
     """
@@ -118,6 +130,16 @@ class Model:
         except Exception as e:
             ic(e)
             return None
+
+
+    def read_all_events_by_id_room(self, room_id):
+        try:
+            return list(map(lambda row: row.to_dict(), Event.query.filter_by(room_id=room_id)))
+            # return self.__session.query(User).filter(user_id).first().to_dict()
+        except Exception as e:
+            ic(e)
+            return None
+
 
     def delete_event(self, event_id):
         try:
